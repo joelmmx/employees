@@ -1,5 +1,6 @@
 package com.joelmmx.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
-import com.joelmmx.entity.Jobs;
 import com.joelmmx.repository.EmployeeWorkedHoursRepository;
 import com.joelmmx.repository.EmployeesRepository;
 import com.joelmmx.repository.GendersRepository;
@@ -64,6 +64,10 @@ public class ServiceProject {
 		List<Employees> employees = employeesRepository.findAll();
 		return employees.stream().filter(x -> jobId.equals(x.getJobs().getId())).collect(Collectors.toList());
 		
+	}
+	
+	public List<EmployeeWorkedHours> getListEmployedHours(Integer id, Date start, Date end){
+		return employeeWorkedHoursRepository.findAllByEmployees_IdAndWorkedDateGreaterThanEqualAndWorkedDateLessThanEqual(id, start, end);
 	}
 	
 }
