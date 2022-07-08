@@ -2,7 +2,9 @@ package com.joelmmx.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.joelmmx.dto.EmployeeWorkedHoursDto;
 import com.joelmmx.dto.EmployeesDto;
+import com.joelmmx.dto.EmployeesResponseDto;
+import com.joelmmx.dto.GenderResponseDto;
 import com.joelmmx.dto.GenericResponse;
+import com.joelmmx.dto.GetEmployeesDto;
+import com.joelmmx.dto.JobResponseDto;
+import com.joelmmx.dto.ResponseGetEmployees;
 import com.joelmmx.dto.Servicio1Response;
 import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
@@ -85,6 +92,36 @@ public class ProjectController {
         Servicio1Response ok= new Servicio1Response();
         ok.setSuccess(Boolean.TRUE);
         ok.setId(employeeWorkedHours.getId());
+        return new ResponseEntity(ok, HttpStatus.OK);
+    }
+	
+	@PostMapping("/tercero")
+    public ResponseEntity<?> getEmployees(@RequestBody GetEmployeesDto getEmployeesDto) throws ParseException{
+        
+        List<Employees> employees= serviceProject.getEmployees(getEmployeesDto.getJobId());
+        List<EmployeesResponseDto> result = new ArrayList<>();
+        
+        for (Employees employee : employees) {
+        	EmployeesResponseDto employeesResponseDto = new EmployeesResponseDto();
+        	employeesResponseDto.setBirthdate(new SimpleDateFormat("yyyy-MM-dd").format(employee.getBirthdate()));
+        	employeesResponseDto.setLastName(employee.getLastName());
+        	employeesResponseDto.setName(employee.getName());
+        	employeesResponseDto.setId(employee.getId());
+        	GenderResponseDto genderResponseDto = new GenderResponseDto();
+        	genderResponseDto.setId(employee.getGenders().getId());
+        	genderResponseDto.setName(employee.getGenders().getName());
+        	employeesResponseDto.setGender(genderResponseDto);
+        	JobResponseDto jobResponseDto = new JobResponseDto();
+        	jobResponseDto.setId(employee.getJobs().getId());
+        	jobResponseDto.setName(employee.getJobs().getName());
+        	jobResponseDto.setSalary(employee.getJobs().getSalary());
+        	employeesResponseDto.setJob(jobResponseDto);
+        	result.add(employeesResponseDto);
+		}
+        
+        ResponseGetEmployees ok= new ResponseGetEmployees();
+        ok.setSuccess(Boolean.TRUE);
+        ok.setEmployees(result);
         return new ResponseEntity(ok, HttpStatus.OK);
     }
 

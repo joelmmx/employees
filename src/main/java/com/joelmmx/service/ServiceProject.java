@@ -1,12 +1,15 @@
 package com.joelmmx.service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
+import com.joelmmx.entity.Jobs;
 import com.joelmmx.repository.EmployeeWorkedHoursRepository;
 import com.joelmmx.repository.EmployeesRepository;
 import com.joelmmx.repository.GendersRepository;
@@ -55,6 +58,12 @@ public class ServiceProject {
 	
 	public boolean existsEmployeeById(Integer id) {
 		return employeesRepository.existsById(id);
+	}
+	
+	public List<Employees> getEmployees(Integer jobId){
+		List<Employees> employees = employeesRepository.findAll();
+		return employees.stream().filter(x -> jobId.equals(x.getJobs().getId())).collect(Collectors.toList());
+		
 	}
 	
 }
