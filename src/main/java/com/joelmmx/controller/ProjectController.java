@@ -2,6 +2,7 @@ package com.joelmmx.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.joelmmx.dto.EmployeeWorkedHoursDto;
 import com.joelmmx.dto.EmployeesDto;
 import com.joelmmx.dto.GenericResponse;
 import com.joelmmx.dto.Servicio1Response;
+import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
 import com.joelmmx.service.ServiceProject;
 import com.joelmmx.util.AgeCalculator;
@@ -58,6 +61,30 @@ public class ProjectController {
         Servicio1Response ok= new Servicio1Response();
         ok.setSuccess(Boolean.TRUE);
         ok.setId(employees.getId());
+        return new ResponseEntity(ok, HttpStatus.OK);
+    }
+	
+	@PostMapping("/segundo")
+    public ResponseEntity<?> createHour(@RequestBody EmployeeWorkedHoursDto employeeWorkedHoursDto) throws ParseException{
+
+        if(StringUtils.isBlank(employeeWorkedHoursDto.getWorkedDate()))
+            return new ResponseEntity(new GenericResponse(), HttpStatus.BAD_REQUEST);
+        
+        if(!serviceProject.existsEmployeeById(employeeWorkedHoursDto.getEmployeeId()))
+            return new ResponseEntity(new GenericResponse(), HttpStatus.BAD_REQUEST);
+        
+        if(employeeWorkedHoursDto.getWorkedHours()>20)
+            return new ResponseEntity(new GenericResponse(), HttpStatus.BAD_REQUEST);
+        
+        if(new SimpleDateFormat("yyyy-MM-dd").parse(employeeWorkedHoursDto.getWorkedDate()).after(new Date()))
+        	return new ResponseEntity(new GenericResponse(), HttpStatus.BAD_REQUEST);
+        
+        EmployeeWorkedHours employeeWorkedHours = serviceProject.saveEmployeeWorkedHours(employeeWorkedHoursDto.getEntity());
+        logger.info("employeeWorkedHours: "+employeeWorkedHours);
+        
+        Servicio1Response ok= new Servicio1Response();
+        ok.setSuccess(Boolean.TRUE);
+        ok.setId(employeeWorkedHours.getId());
         return new ResponseEntity(ok, HttpStatus.OK);
     }
 

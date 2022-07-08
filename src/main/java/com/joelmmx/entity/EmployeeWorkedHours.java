@@ -61,4 +61,10 @@ public class EmployeeWorkedHours {
 		this.workedDate = workedDate;
 	}
 
+	@Override
+	public String toString() {
+		return "EmployeeWorkedHours [id=" + id + ", employees=" + employees + ", workedHours=" + workedHours
+				+ ", workedDate=" + workedDate + "]";
+	}
+
 }

@@ -5,7 +5,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
+import com.joelmmx.repository.EmployeeWorkedHoursRepository;
 import com.joelmmx.repository.EmployeesRepository;
 import com.joelmmx.repository.GendersRepository;
 import com.joelmmx.repository.JobsRepository;
@@ -22,8 +24,15 @@ public class ServiceProject {
 	@Autowired
 	private JobsRepository jobsRepository;
 	
+	@Autowired
+	private EmployeeWorkedHoursRepository employeeWorkedHoursRepository;
+	
 	public Employees saveEmployees(Employees employees) {
 		return employeesRepository.save(employees);
+	}
+	
+	public EmployeeWorkedHours saveEmployeeWorkedHours(EmployeeWorkedHours employeeWorkedHours) {
+		return employeeWorkedHoursRepository.save(employeeWorkedHours);
 	}
 	
 	public boolean existsByName(String name) {
@@ -42,6 +51,10 @@ public class ServiceProject {
 	
 	public boolean existsJobsById(Integer id) {
 		return jobsRepository.existsById(id);
+	}
+	
+	public boolean existsEmployeeById(Integer id) {
+		return employeesRepository.existsById(id);
 	}
 	
 }
