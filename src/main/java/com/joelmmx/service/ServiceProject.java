@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
+import com.joelmmx.entity.Jobs;
 import com.joelmmx.repository.EmployeeWorkedHoursRepository;
 import com.joelmmx.repository.EmployeesRepository;
 import com.joelmmx.repository.GendersRepository;
@@ -58,6 +59,10 @@ public class ServiceProject {
 	
 	public boolean existsEmployeeById(Integer id) {
 		return employeesRepository.existsById(id);
+	}
+	
+	public Employees getEmployeeById(Integer id) {
+		return employeesRepository.findById(id).get();
 	}
 	
 	public List<Employees> getEmployees(Integer jobId){

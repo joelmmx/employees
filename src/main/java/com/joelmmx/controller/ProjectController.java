@@ -28,9 +28,11 @@ import com.joelmmx.dto.JobResponseDto;
 import com.joelmmx.dto.RequestServicio4;
 import com.joelmmx.dto.ResponseGetEmployees;
 import com.joelmmx.dto.ResponseGetHours;
+import com.joelmmx.dto.ResponseGetPayment;
 import com.joelmmx.dto.Servicio1Response;
 import com.joelmmx.entity.EmployeeWorkedHours;
 import com.joelmmx.entity.Employees;
+import com.joelmmx.entity.Jobs;
 import com.joelmmx.service.ServiceProject;
 import com.joelmmx.util.AgeCalculator;
 
@@ -154,6 +156,38 @@ public class ProjectController {
         ResponseGetHours ok= new ResponseGetHours();
         ok.setSuccess(Boolean.TRUE);
         ok.setTotalWorkedHours(sum);
+        return new ResponseEntity<>(ok, HttpStatus.OK);
+    }
+	
+	@PostMapping("/quinto")
+    public ResponseEntity<?> calculatePayment(@RequestBody RequestServicio4 requestServicio4) throws ParseException{
+		
+		 if(!serviceProject.existsEmployeeById(requestServicio4.getEmployeeId()))
+	            return new ResponseEntity<>(new GenericResponse(), HttpStatus.BAD_REQUEST);
+	        
+		 if(StringUtils.isBlank(requestServicio4.getEndDate()))
+	            return new ResponseEntity<>(new GenericResponse(), HttpStatus.BAD_REQUEST);
+		 
+		 if(StringUtils.isBlank(requestServicio4.getStartDate()))
+	            return new ResponseEntity<>(new GenericResponse(), HttpStatus.BAD_REQUEST);
+        
+		Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(requestServicio4.getStartDate());
+		Date endDate   = new SimpleDateFormat("yyyy-MM-dd").parse(requestServicio4.getEndDate());
+		
+		if(startDate.after(endDate))
+            return new ResponseEntity<>(new GenericResponse(), HttpStatus.BAD_REQUEST);
+		
+		List<EmployeeWorkedHours> employeeWorkedHours = serviceProject.getListEmployedHours(requestServicio4.getEmployeeId(), startDate, endDate);
+		
+		Integer sumHour = employeeWorkedHours.stream()
+				  .mapToInt(x -> x.getWorkedHours())
+				  .sum();
+        
+		Employees employees = serviceProject.getEmployeeById(requestServicio4.getEmployeeId());
+		
+        ResponseGetPayment ok= new ResponseGetPayment();
+        ok.setSuccess(Boolean.TRUE);
+        ok.setPayment(sumHour*employees.getJobs().getSalary());
         return new ResponseEntity<>(ok, HttpStatus.OK);
     }
 
